@@ -1,5 +1,4 @@
 # YORA
-> A lightweight static file scanner inspired by YARA
 
 *Glory to Devola and Popola.*
 
@@ -23,6 +22,9 @@ YORA/
 │   ├── parser.rb       # .yora rule parser
 │   ├── scanner.rb      # pattern scanner
 │   └── reporter.rb     # report generator
+├── src/
+│   └── scanner.c       # C scanner source
+├── native/             # compiled C library
 ├── rules/
 │   └── default.yora    # default rule set
 ├── cache/              # parsed rule cache (auto-generated)
@@ -35,7 +37,23 @@ YORA/
 
 ---
 
+## Requirements
+
+- Ruby 3.x
+- FFI gem: `gem install ffi`
+
+---
+
 ## Usage
+
+### 1. Compile the C scanner
+
+```bash
+mkdir native
+gcc -shared -fPIC -o native/scanner.so src/scanner.c
+```
+
+### 2. Run YORA
 
 ```bash
 ruby bin/yora.rb <rule_file> <target_file>
@@ -104,14 +122,7 @@ Result    : MATCH DETECTED
 ---
 
 ## Feature Upgrades
-1. Replace Ruby scanner with a C implementation for better performance
-2. Add CLI colors
-
----
-
-## Requirements
-
-- Ruby 3.x
+1. Add CLI colors
 
 ---
 
