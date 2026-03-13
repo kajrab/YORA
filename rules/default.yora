@@ -1,0 +1,15 @@
+rule detect_reverse_shell
+{
+    meta:
+        description = "Detects common reverse shell patterns"
+        author = "Admin"
+        severity = "critical"
+
+    patterns:
+        $a = "bash -i >& /dev/tcp/"
+        $b = "nc -e /bin/sh"
+        $c = "socket.socket"
+
+    condition:
+        any of them
+}
