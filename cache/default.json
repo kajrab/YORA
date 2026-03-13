@@ -1,0 +1,9 @@
+{
+  "meta": {
+    "description": "Detects common reverse shell patterns",
+    "author": "Admin",
+    "severity": "critical"
+  },
+  "patterns": ["bash -i >& /dev/tcp/", "nc -e /bin/sh", "socket.socket"],
+  "condition": "ANY"
+}
