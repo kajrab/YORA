@@ -1,3 +1,11 @@
+require 'ffi'
+
+module NativeScanner
+  extend FFI::Library
+  ffi_lib File.join(__dir__, '../native/scanner.so')
+  attach_function :scan_file, [:string, :pointer, :int], :int
+end
+
 class YORAScanner
   def initialize(target_file, patterns)
     @target_file = target_file
@@ -6,26 +14,20 @@ class YORAScanner
   end
 
   def scan
-    content = File.binread(@target_file)
+    ptrs = @patterns.map { |p| FFI::MemoryPointer.from_string(p) }
+    ptr_array = FFI::MemoryPointer.new(:pointer, ptrs.size)
+    ptr_array.write_array_of_pointer(ptrs)
+
+    result = NativeScanner.scan_file(@target_file, ptr_array, @patterns.size)
 
     @patterns.each_with_index do |pattern, i|
       key = "$#{('a'.ord + i).chr}"
       @matches[key] = {
         pattern: pattern,
-        matched: content.include?(pattern)
+        matched: (result & (1 << i)) != 0
       }
     end
 
     @matches
-  end
-end
-
-if __FILE__ == $0
-  patterns = ["bash -i >& /dev/tcp/", "nc -e /bin/sh", "socket.socket"]
-  scanner = YORAScanner.new("test/sample.txt", patterns)
-  results = scanner.scan
-  results.each do |key, data|
-    status = data[:matched] ? "MATCH" : "NO MATCH"
-    puts "#{data[:matched] ? '[+]' : '[-]'} #{key} = \"#{data[:pattern]}\"  #{status}"
   end
 end
