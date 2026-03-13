@@ -1,0 +1,15 @@
+YORA SCAN REPORT
+================
+Description : Detects common reverse shell patterns
+Author      : Admin
+Severity    : critical
+Target      : .\test\sample.txt
+Scanned at  : 2026-03-13 23:47:38
+
+Patterns:
+  [+] $a = "bash -i >& /dev/tcp/"  MATCH
+  [-] $b = "nc -e /bin/sh"  NO MATCH
+  [-] $c = "socket.socket"  NO MATCH
+
+Condition : ANY
+Result    : MATCH DETECTED
